@@ -10,7 +10,7 @@ import os
 import datetime
 from io import StringIO
 
-from logger import *
+from .logger import *
 
 
 class StopWatch:
@@ -224,6 +224,12 @@ class FixedDelayTaskScheduler(object):
 
 # ------------------------------------------------
 
+class TempClass(object):
+    pass
+
+
+# ------------------------------------------------
+
 
 # write to excel
 """
@@ -396,14 +402,14 @@ def map_to_string(args):
     return str_io.getvalue()
 
 
-try:
-    display_funcs.html("")
-except:
-    log_info('importing display_funcs')
-    try:
-        import display_funcs
-        from display_funcs import *
-    except Exception as e:
-        log_traceback()
-        sys.stderr.write(
-            f"Warning: Problem while importing display_funcs - {str(e)}\n")
+# try:
+#     display_funcs.html("")
+# except:
+#     log_info('importing display_funcs')
+#     try:
+#         import display_funcs
+#         from display_funcs import *
+#     except Exception as e:
+#         log_traceback()
+#         sys.stderr.write(
+#             f"Warning: Problem while importing display_funcs - {str(e)}\n")

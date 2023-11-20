@@ -213,7 +213,15 @@ def set_thread_log_prefix(prefix):
     set_thread_local_attribute('thread_log_prefix', prefix)
 
 
-default_logger = Logger(log_file_path=None, console_log_on=True)
+class NoOpLogger:
+
+    def info(self, msg):
+        pass
+
+    error = info
+
+
+default_logger = Logger(log_file_path=None, console_log_on=True, logger=NoOpLogger())
 
 
 def init_file_logger(log_file_path, console_log_on=False, max_bytes=50*1024*1024, backup_count=10,

@@ -1,7 +1,6 @@
 import base64
 import pickle
 import pathlib
-import errno
 import os
 import datetime
 
