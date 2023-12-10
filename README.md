@@ -8,7 +8,7 @@ pip install nimble-tk
 
 # Examples
 
-All code examples can be found in this [notebook](https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb)
+All code examples can be found in the <a href="https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb" target="_blank">examples notebook</a>
 
 ## Logging
 
@@ -166,4 +166,4 @@ Output:
 
 
 <br/><br/>
-For more code examples, checkout the examples [notebook](https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb)
+For more code examples, checkout the <a href="https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb" target="_blank">examples notebook</a>
