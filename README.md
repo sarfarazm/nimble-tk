@@ -8,6 +8,8 @@ pip install nimble-tk
 
 # Examples
 
+All code examples can be found in this [notebook](https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb)
+
 ## Logging
 
 The below set of cells give some utility wrappers on python's logging functionality.
@@ -162,3 +164,6 @@ Output:
 |             1 |            3 |
 |             ... |            ... |
 
+
+<br/><br/>
+For more code examples, checkout the examples [notebook](https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb)
