@@ -4,7 +4,7 @@ import pathlib
 import os
 import datetime
 
-import logger as logger
+from . import logger
 
 # File utilities
 import shutil
@@ -77,12 +77,16 @@ def write_to_file(filepath: str, content: object, strip: bool = True) -> None:
         filepath (str): The location of the file to write
         content (object): If the given variable is not a string, 
             it is converted to string using str(content).
+        strip (bool): Whether to remove prefix and suffix whitespace from the 
+            string before writing.
 
     Returns:
         None
     """
     if type(content) != str:
         content = str(content)
+    if strip:
+        content = content.strip()
     with open(filepath, 'w') as writer:
         writer.write(content.strip())
 
@@ -96,14 +100,18 @@ def append_to_file(filepath, content, strip=True):
         filepath (str): The location of the file to write
         content (object): If the given variable is not a string, 
             it is converted to string using str(content).
+        strip (bool): Whether to remove prefix and suffix whitespace from the 
+            string before writing.
 
     Returns:
         None
     """
     if type(content) != str:
         content = str(content)
+    if strip:
+        content = content.strip()
     with open(filepath, 'a') as appender:
-        appender.write(content.strip())
+        appender.write(content)
 
 # ------------------------------------
 
@@ -142,30 +150,3 @@ def pickle_load(filepath: str, put: dict = {}) -> object:
     for key, attr in put.items():
         obj.__dict__[key] = attr
     return obj
-
-
-def pickle_dumps_base64(obj: object) -> str:
-    """Pickles the given object and converts the result to a base64 encoded 
-    string
-
-    Args:
-        obj (object): The object to pickle
-
-    Returns:
-        str: base64 encoded pickled representation of the given object
-    """
-    return base64.b64encode(pickle.dumps(obj)).decode()
-
-
-def pickle_loads_base64(base64_str: str) -> object:
-    """Performs the reverse operation of the `pickle_dumps_base64` method.
-    base64 decodes the given string and then unpickles the binary data back to
-    a python object.
-
-    Args:
-        base64_str (str): base64 encoded pickled representation of an object
-
-    Returns:
-        object: The unpickled object
-    """
-    return pickle.loads(base64.b64decode(base64_str))

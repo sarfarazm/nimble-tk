@@ -163,7 +163,7 @@ class FixedDelayTaskScheduler(object):
         self.log_prefix = log_prefix
         self.log = log
         self.max_interval = max_interval
-        self.set_timer(interval=init_interval)
+        self.__set_timer(interval=init_interval)
 
     def _run(self):
         """
@@ -173,7 +173,7 @@ class FixedDelayTaskScheduler(object):
         set_thread_log_prefix(self.log_prefix)
 
         if self.should_start_next_run():
-            self.set_timer()
+            self.__set_timer()
             try:
                 self.is_running = True
                 self.running_since = datetime.datetime.now()
@@ -207,13 +207,19 @@ class FixedDelayTaskScheduler(object):
         log_info(f"Updating interval from {self.interval} to {new_interval}")
         self.interval = new_interval
 
-    def set_timer(self, interval=None):
+    def __set_timer(self, interval=None):
         """
         Sets the timer for the next execution of the task.
 
         :param interval: The interval after which the task should be executed. Defaults to the current interval.
         """
-        # Your existing logic here...
+        if not interval:
+            interval = self.interval
+
+        if not self.is_shutdown:
+            self._timer = threading.Timer(interval, self._run)
+            self._timer.daemon=True
+            self._timer.start()
 
     def shutdown(self):
         """
@@ -229,72 +235,6 @@ class TempClass(object):
 
 
 # ------------------------------------------------
-
-
-# write to excel
-"""
-usage:
-dfs_map = {'Sheet1':df1, 'sheet2': df2}
-file_name = '/tmp/data.xlsx'
-write_dfs_to_excel(dfs_map, file_name, percent_cols=[])
-"""
-
-
-def write_dfs_to_excel(dfs_map, file_name, maximize_col_widths=True, percent_cols=[], text_cols=[], index=False):
-    log_info(f"Write to excel - {file_name}")
-    writer = pd.ExcelWriter(file_name, engine='xlsxwriter',
-                            datetime_format='mmm d yyyy hh:mm:ss', date_format='mmm dd yyyy')
-    workbook = writer.book
-    num_format = workbook.add_format(
-        {'num_format': '[>9999999]##\,##\,##\,##0; [>99999]##\,##\,##0; ##,##0'})
-    percent_fmt = workbook.add_format({'num_format': '0.00%'})
-    text_format = workbook.add_format({'num_format': '@'})
-    for sheet, df in dfs_map.items():
-        log_info(f"Write to excel - writing sheet - {sheet}")
-        df.to_excel(writer, sheet, index=index)
-
-    for sheet, df in dfs_map.items():
-
-        df_sample = df.sample(
-            n=min(df.shape[0], 100)).reset_index(drop=(not index))
-
-        for column in df_sample.columns:
-            col_format = None
-            max_length_for_col = df_sample[column].astype(str).map(len).max()
-            # if column name is bigger than column content
-            max_length_for_col = max(max_length_for_col, len(column))
-            # limit column size to 250 chars
-            max_length_for_col = min(max_length_for_col, 250)
-            column_length = max_length_for_col
-            if column_length > 150:
-                column_length = 150
-            col_idx = df_sample.columns.get_loc(column)
-
-            if column in text_cols:
-                col_format = text_format
-            elif 'int' in str(df_sample[column].dtype) or 'float' in str(df_sample[column].dtype):
-                if column in percent_cols:
-                    col_format = percent_fmt
-                else:
-                    col_format = num_format
-            elif 'datetime64[ns' in str(df_sample[column].dtype):
-                column_length = 19
-            else:
-                # writer.sheets[sheet].set_column(col_idx, col_idx, column_length + 2)
-                pass
-
-            writer.sheets[sheet].set_column(
-                col_idx, col_idx, column_length + 2, col_format)
-
-    try:
-        writer.save()
-    except:
-        writer.close()
-
-    log_info("Write to excel - done")
-
-# ----------------------------------------------------------
-
 
 def exception_to_trace_string(exception):
     if exception.__cause__:
@@ -342,12 +282,44 @@ ONE_BILLION = TEN_CRORE * 10
 HUNDRED_CRORE = ONE_BILLION
 ONE_QUADRILLION = ONE_BILLION * ONE_MILLION
 
-"""
-This functions helps in hot reloading a class which has been recently modified.
-"""
+import pickle 
+import base64 
 
 
-def reload_modules(module_list=[]):
+def pickle_dumps_base64(obj: object) -> str:
+    """Pickles the given object and converts the result to a base64 encoded 
+    string
+
+    Args:
+        obj (object): The object to pickle
+
+    Returns:
+        str: base64 encoded pickled representation of the given object
+    """
+    return base64.b64encode(pickle.dumps(obj)).decode()
+
+
+def pickle_loads_base64(base64_str: str) -> object:
+    """Performs the reverse operation of the `pickle_dumps_base64` method.
+    base64 decodes the given string and then unpickles the binary data back to
+    a python object.
+
+    Args:
+        base64_str (str): base64 encoded pickled representation of an object
+
+    Returns:
+        object: The unpickled object
+    """
+    return pickle.loads(base64.b64decode(base64_str))
+
+
+def reload_modules(module_list:list=[]):
+    """This functions helps in hot reloading a module which has been recently modified.
+
+    Args:
+        module_list (list, optional): List of names of modules in string.
+        e.g. module_list = ['general_utils']
+    """
     # module_list = ['common_funcs']
     for module in module_list:
         if module in sys.modules:
@@ -366,7 +338,24 @@ def generate_pseudo_uuid(n=5, prefix=''):
         random_append_str += str(random.randint(0, 10))
     return prefix + now.strftime("%y%m%d%H%M%S%f") + random_append_str
 
-# todo: print traceback in proper format
+
+from hashlib import sha256
+def hash(obj:object) -> str:
+    """Create sha256 hash of the given object. 
+
+    If the object is not a string or a number, it is first converted into a 
+    base64 encoded pickle string.
+
+    Args:
+        obj (object): The object to hash
+
+    Returns:
+        str: The hash value 
+    """
+    value = obj
+    if not isinstance(obj, int) and not isinstance(obj, int) and not isinstance(obj, float):
+        value = pickle_dumps_base64(obj)
+    return sha256(value.encode('utf-8')).hexdigest()
 
 
 def log_uncaught_exception(exctype, value, tb):
