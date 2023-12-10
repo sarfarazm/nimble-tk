@@ -78,7 +78,7 @@ ZeroDivisionError: division by zero
 ```
 
 <br/>
-Logs can also be directly written to the file **without logging on the console**. This helps in cases where we do not want to flood the console with a lot of logs.
+Logs can also be directly written to the file <b>without logging on the console</b>. This helps in cases where we do not want to flood the console with a lot of logs.
 
 ```python
 ntk.log_info_file("some log message")
