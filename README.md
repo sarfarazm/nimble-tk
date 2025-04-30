@@ -8,7 +8,7 @@ pip install nimble-tk
 
 # Examples
 
-All code examples can be found in the <a href="https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb" target="_blank">examples notebook</a>
+All code examples, including the following, can be found in the <a href="https://github.com/sarfarazm/nimble-tk/blob/main/examples/try_nimble.ipynb" target="_blank">examples notebook</a>
 
 ## Logging
 
