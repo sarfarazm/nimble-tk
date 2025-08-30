@@ -114,7 +114,7 @@ def run_command_return_iter(command, compress=False, env=None, log=True):
     final_command = command
 
     if log:
-        log.log_info('Executing command: %s' % final_command)
+        common.log_info('Executing command: %s' % final_command)
     p = subprocess.Popen(final_command, stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT, stdin=None, shell=True, env=env)
     if not compress:
@@ -140,7 +140,7 @@ def run_command_iter_output(command, log=True, env=None):
 
     final_command = command
     if log:
-        log.log_info('Executing command: %s, env: %s' % (final_command, env))
+        common.log_info('Executing command: %s, env: %s' % (final_command, env))
     p = subprocess.Popen(final_command, stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT, stdin=None, shell=True, env=env)
     for line in iter(p.stdout.readline, b''):

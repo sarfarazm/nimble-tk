@@ -265,6 +265,8 @@ def log_info(*msgs, **kwargs):
     """
     default_logger.log_info(*msgs, **kwargs)
 
+log = log_info  # alias for log_info
+
 
 def log_info_file(*msgs):
     """
@@ -278,6 +280,8 @@ def log_info_file(*msgs):
     """
     default_logger.log_info_file(*msgs)
 
+logf = log_info_file  # alias for log_info_file
+
 
 def log_error(*msgs):
     """
@@ -289,7 +293,6 @@ def log_error(*msgs):
         msgs: Variable length argument list for error messages to be logged.
     """
     default_logger.log_error(*msgs)
-
 
 """
 Log error messages to a file only and not to the console.
@@ -303,7 +306,6 @@ Parameters:
 def log_error_file(*msgs):
     default_logger.log_error_file(*msgs)
 
-
 """
 Log a traceback of the current exception with an optional additional message.
 
@@ -316,6 +318,7 @@ Parameters:
 def log_traceback(extra_info_str=''):
     default_logger.log_traceback(extra_info_str)
 
+logtrace = log_traceback
 
 def log_traceback_file(extra_info_str=''):
     """
@@ -329,3 +332,5 @@ def log_traceback_file(extra_info_str=''):
         extra_info_str (str): Additional information to prepend to the traceback message.
     """
     default_logger.log_traceback_file(extra_info_str='')
+
+logtracef = log_traceback_file

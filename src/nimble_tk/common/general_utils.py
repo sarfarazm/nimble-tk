@@ -48,6 +48,9 @@ class StopWatch:
         ms = (time_diff.microseconds / 1000) % 1000
         time_str = "%02d:%02d:%02d.%03d" % (h, m, s, ms)
         return time_str
+    
+    def __str__(self):
+        return self.get_time()
 
     def get_time(self) -> str:
         """

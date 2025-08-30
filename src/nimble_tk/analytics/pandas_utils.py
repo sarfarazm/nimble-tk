@@ -1,6 +1,6 @@
 import pandas as pd
 from nimble_tk import common
-
+from collections import namedtuple
 
 
 def value_counts_perc(self, fill='NA'):
@@ -69,6 +69,7 @@ def sr_reverse_sort_values(self, *args, **kwargs):
 
 
 pd.Series.rsort = sr_reverse_sort_values
+pd.Series.sort = pd.Series.sort_values
 
 
 def mcut(series:pd.Series, bins:list=None, minVal:int=0, maxVal:int=None, 
@@ -214,3 +215,19 @@ def remove_tz_info(self):
 
 
 pd.Series.remove_tz_info = remove_tz_info
+
+
+def map_attr(self, value_map, attr):
+    dummy = namedtuple('dummy', [attr])
+    mapped_values = []
+    for value in self.values:
+        mapped_object = value_map.get(value)
+        mapped_value = getattr(mapped_object, attr) if mapped_object is not None else None
+        mapped_values.append(mapped_value)
+    return pd.Series(mapped_values, name=attr, index=self.index)
+pd.Series.map_attr = map_attr
+
+
+def idx_outer_merge(self, df_other, **kwargs):
+    return self.merge(df_other, left_index=True, right_index=True, how='outer', **kwargs)
+pd.DataFrame.idx_outer_merge = idx_outer_merge
